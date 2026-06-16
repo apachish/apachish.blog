@@ -1,0 +1,29 @@
+{
+    "name": "apachish/blog",
+    "description": "Introducing a comprehensive and robust blog package designed for dynamic content management and enhanced user engagement. This powerful solution provides all the essential tools for effortlessly creating and managing blogs, complete with efficient archiving capabilities.",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Apachish\\Blog\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "apachish",
+            "email": "apachish@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "php": "^8.2",
+        "illuminate/support": "^11.0|^12.0|^13.0"
+    },
+     "extra": {
+        "laravel": {
+            "providers": [
+                "Apachish\\Blog\\BlogServiceProvider"
+            ]
+        }
+    }
+}
