@@ -2,6 +2,7 @@
 
 namespace Apachish\Blog\App\Models;
 
+use Apachish\Blog\App\Traits\HasReadingTime;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -13,6 +14,9 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Post extends Model
 {
     use SoftDeletes;
+    use HasReadingTime;
+
+    protected $readingTimeColumn = 'content'; // اختیاری، اگر نام فیلد فرق دارد
 
     protected $table = 'blog_posts';
     /**
@@ -22,8 +26,28 @@ class Post extends Model
      * private – only logged‑in users with permission.
      * trash – soft‑deleted (use SoftDeletes also on Post to move to trash).
      */
-    protected $fillable = ['title', 'slug', 'excerpt', 'content', 'status', 'published_at', 'password', 'parent_id', 'template', 'user_id'];
+    protected $fillable = ['title', 'slug', 'excerpt', 'content', 'status', 'published_at',
+        'user_id','project_id','locale','featured_image',
+        'views_count', 'unique_views_count','meta_title','meta_description',
+        'estimated_reading_time', 'average_reading_time',
+        'comments_count', 'meta'
+    ];
+
+    protected $casts = [
+        'meta' => 'array',
+        'published_at' => 'datetime',
+        'views_count' => 'integer',
+        'unique_views_count' => 'integer',
+        'estimated_reading_time' => 'integer',
+        'average_reading_time' => 'integer',
+    ];
+
     protected $dates = ['published_at', 'deleted_at'];
+
+    public function views()
+    {
+        return $this->hasMany(BlogPostView::class, 'post_id');
+    }
 
     // Author
     public function user(): BelongsTo
@@ -66,20 +90,16 @@ class Post extends Model
     // Categories
     public function categories(): BelongsToMany
     {
-        return $this->belongsToMany(Category::class, 'category_post');
+        return $this->belongsToMany(Category::class, 'blog_category_post');
     }
 
     // Tags
     public function tags(): BelongsToMany
     {
-        return $this->belongsToMany(Tag::class, 'post_tag');
+        return $this->belongsToMany(Tag::class, 'blog_post_tag')->withTimestamps();
     }
 
-    // Comments
-    public function comments(): HasMany
-    {
-        return $this->hasMany(Comment::class);
-    }
+
 
     // Meta (key-value)
     public function meta(): HasMany
@@ -97,17 +117,45 @@ class Post extends Model
     public static function boot()
     {
         parent::boot();
-        static::updating(function (Post $post) {
-            if ($post->isDirty(['title', 'excerpt', 'content'])) {
-                $revision = new PostRevision([
-                    'user_id' => auth()->id() ?? $post->user_id,
-                    'title'   => $post->getOriginal('title'),
-                    'excerpt' => $post->getOriginal('excerpt'),
-                    'content' => $post->getOriginal('content'),
-                ]);
-                $post->revisions()->save($revision);
-            }
-        });
+//        static::updating(function (Post $post) {
+//            if ($post->isDirty(['title', 'excerpt', 'content'])) {
+//                $revision = new PostRevision([
+//                    'user_id' => auth()->id() ?? $post->user_id,
+//                    'title'   => $post->getOriginal('title'),
+//                    'excerpt' => $post->getOriginal('excerpt'),
+//                    'project_id' => $post->getOriginal('project_id'),
+//                    'content' => $post->getOriginal('content'),
+//                ]);
+//                $post->revisions()->save($revision);
+//            }
+//        });
+    }
+
+    // محاسبه زمان مطالعه (بر اساس تعداد کلمات)
+    public function calculateEstimatedReadingTime()
+    {
+        $wordsPerMinute = 200; // میانگین سرعت خواندن فارسی
+        $wordCount = str_word_count(strip_tags($this->content));
+        $minutes = ceil($wordCount / $wordsPerMinute);
+
+        $this->update(['estimated_reading_time' => $minutes]);
+
+        return $minutes;
+    }
+
+    // محاسبه میانگین زمان واقعی خواندن
+    public function updateAverageReadingTime()
+    {
+        $average = $this->views()
+            ->whereNotNull('reading_time')
+            ->where('reading_time', '>', 10) // حداقل 10 ثانیه
+            ->avg('reading_time');
+
+        if ($average) {
+            $this->update(['average_reading_time' => (int) $average]);
+        }
+
+        return $average;
     }
 
     // Retrieve the featured image URL easily

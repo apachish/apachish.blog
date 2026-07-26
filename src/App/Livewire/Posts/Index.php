@@ -25,9 +25,26 @@ class Index extends Component
         'status' => '',
     ];
 
+    public array $statusLabels = [];
+    public array $classes = [
+        "draft"=> 'bg-blue-50 text-blue-700',
+        "pending"=>'bg-yellow-50 text-yellow-700',
+        "published"=>'bg-green-50 text-green-700',
+        "private"=>'bg-yellow-50 text-yellow-700',
+        "trash"=>'bg-red-50 text-red-700',
+    ];
+
     public function mount()
     {
         $this->project = current_project();
+        $this->statusLabels = [
+            "draft"=>__("Draft"),
+            "pending"=>__("pending"),
+            "published"=>__("published"),
+            "private"=>__("private"),
+            "trash"=>__("trash"),
+
+        ];
 
     }
 
@@ -60,13 +77,13 @@ class Index extends Component
                 'label' => __("Deal ID"),
             ],
             [
-                'key' => 'name',
+                'key' => 'title',
                 'label' => __("blog::messages.Name Post"),
             ],
-            [
-                'key' => 'category.name',// {{ $post->parent?->name ?? 'ندارد' }}
-                'label' => __("blog::messages.Category"),
-            ],
+//            [
+//                'key' => 'category.name',// {{ $post->parent?->name ?? 'ندارد' }}
+//                'label' => __("blog::messages.Category"),
+//            ],
             [
                 'key' => 'viewer',// {{ $post->parent?->name ?? 'ندارد' }}
                 'label' => __("blog::messages.Viewer"),
@@ -88,10 +105,28 @@ class Index extends Component
                 'key' => 'Action',
                 'type' => 'actions',
                 'label' => __('Action'),
-                'href_edit' => route('blog.posts.edit', ['api_key' => $this->project->api_key,'post_id' => '__ID__']),
+                'href_edit' => ["url"=>route('blog.posts.edit', ['api_key' => $this->project->api_key,'post_id' => '__ID__']),"can"=>"edit_post"],
+                'href_delete' => ["can"=>"delete_post"],
             ],
         ];
-
+        $this->headers = collect( $this->headers)->map(function ($header) {
+            if ($header['key'] === 'Action') {
+                if (isset($header['href_edit']) && !auth()->user()->can($header['href_edit']['can'])) {
+                    unset($header['href_edit']);
+                }
+                if (isset($header['href_panel']) && !auth()->user()->can($header['href_panel']['can'])) {
+                    unset($header['href_panel']);
+                }
+                if (isset($header['href_delete']) && !auth()->user()->can($header['href_delete']['can'])) {
+                    unset($header['href_delete']);
+                }
+                // اگر هیچ دکمه‌ای باقی نماند، کل ستون Action حذف شود
+                if (!isset($header['href_edit']) && !isset($header['href_panel']) && !isset($header['href_delete'])) {
+                    return null;
+                }
+            }
+            return $header;
+        })->filter()->values()->all();
         $this->loadPosts();
 
 
@@ -101,7 +136,7 @@ class Index extends Component
 
     public function loadPosts()
     {
-        $posts = Post::with('parent');
+        $posts = Post::with('categories');
 
         $posts->when($this->filterState['search'] ?? null, function ($query, $value) {
             $query->where('name', 'like', "%{$value}%");

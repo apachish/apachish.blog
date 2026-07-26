@@ -23,7 +23,7 @@ return new class extends Migration
             $table->string('author_ip')->nullable();
             $table->timestamps();
 
-            $table->foreign('post_id')->references('id')->on('blog_posts')->onDelete('cascade');
+            $table->foreign('post_id')->references('id')->on('blog_post_revisions')->onDelete('cascade');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('set null');
             $table->foreign('parent_id')->references('id')->on('blog_comments')->onDelete('cascade');
         });

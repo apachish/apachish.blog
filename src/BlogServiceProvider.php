@@ -2,6 +2,8 @@
 
 namespace Apachish\Blog;
 
+use Apachish\Blog\App\Models\Post;
+use Apachish\Blog\App\Observers\BlogPostObserver;
 use Apachish\Blog\Livewire\Categories\Index;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
@@ -12,10 +14,14 @@ class BlogServiceProvider extends ServiceProvider
     public function register()
     {
         // ثبت تنظیمات یا اتصالات
+        $this->mergeConfigFrom(__DIR__.'/config/seeder.php','package-seeders');
+
     }
 
     public function boot()
     {
+        Post::observe(BlogPostObserver::class);
+
         Livewire::addNamespace(
             namespace: 'blog',
             classNamespace: 'Apachish\\Blog\\App\\Livewire',
@@ -30,7 +36,7 @@ class BlogServiceProvider extends ServiceProvider
         $this->loadViewsFrom(__DIR__.'/resources/views', 'blog');
 
         // بارگذاری مایگریشن‌ها (Migrations)
-        $this->loadMigrationsFrom(__DIR__.'/database/migrations');
+        $this->loadMigrationsFrom(__DIR__.'/Database/migrations');
 
         $this->loadTranslationsFrom(__DIR__.'/lang', 'blog');
 
@@ -38,6 +44,9 @@ class BlogServiceProvider extends ServiceProvider
             __DIR__.'/lang' => $this->app->langPath('vendor/blog'),
         ], 'blog-lang');
 
+        $this->publishes([
+            __DIR__.'/Database/Seeders/' => database_path('seeders'),
+        ], 'blog-seeders');
     }
 }
 

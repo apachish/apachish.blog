@@ -8,5 +8,5 @@ class Tag extends Model
 {
 
     protected $table = 'blog_tags';
-    protected $fillable = ['name', 'slug','project_id'];
+    protected $fillable = ['name', 'slug','project_id','locale'];
 }

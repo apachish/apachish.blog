@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('post_id');
             $table->unsignedBigInteger('tag_id');
-
+            $table->timestamps();
             $table->unique(['post_id', 'tag_id']);   // prevents duplicate links
             $table->foreign('post_id')->references('id')->on('blog_posts')->onDelete('cascade');
             $table->foreign('tag_id')->references('id')->on('blog_tags')->onDelete('cascade');

@@ -25,6 +25,7 @@ return new class extends Migration
 
             $table->string('name');
             $table->string('slug');
+            $table->string('locale', 5); // 'fa', 'en'
 
             $table->text('description')->nullable();
 

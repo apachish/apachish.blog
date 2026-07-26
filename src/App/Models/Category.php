@@ -9,7 +9,7 @@ class Category extends Model
 
     protected $table = 'blog_categories';
 
-    protected $fillable = ['name', 'slug','parent_id','description','order','status','project_id'];
+    protected $fillable = ['name', 'slug','parent_id','description','order','status','project_id','locale'];
 
     public function parent()
     {

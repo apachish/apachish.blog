@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('blog_tags', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->string('locale', 5); // 'fa', 'en'
             $table->string('slug')->unique();
             $table->foreignId('project_id')->constrained('projects')->cascadeOnDelete();
 

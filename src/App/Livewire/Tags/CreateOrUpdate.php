@@ -18,6 +18,7 @@ class CreateOrUpdate extends Component
         'name' => null,
         'slug' => null,
         'project_id' => null,
+        'locale' => null,
     ];
     public $categories = [];
 
@@ -31,6 +32,8 @@ class CreateOrUpdate extends Component
             $this->title_button = __("Edit");
         $this->project = current_project();
         $this->tag["project_id"] = $this->project->id;
+        $this->tag["locale"] = app()->getLocale();
+
     }
 
     public function messages()
@@ -68,6 +71,7 @@ class CreateOrUpdate extends Component
         Tag::updateOrCreate(['id' => $this->tag['id'],'project_id' => $this->tag['project_id']], [
             'name' => data_get($this->tag,'name'),
             'slug' => data_get($this->tag,'slug'),
+            'locale' => data_get($this->tag,'locale'),
         ]);
         return $this->redirect(route('blog.tags.index',['api_key'=>$this->project->api_key]));
 

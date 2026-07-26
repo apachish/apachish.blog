@@ -20,16 +20,24 @@ return new class extends Migration
             $table->longText('content')->nullable();
             $table->string('status')->default('draft'); // draft, pending, published, private, trash
             $table->timestamp('published_at')->nullable(); // scheduled publishing
-            $table->string('password')->nullable(); // password-protected posts
-            $table->unsignedBigInteger('parent_id')->nullable(); // hierarchical posts (like pages)
-            $table->string('template')->nullable(); // custom template
-            $table->unsignedInteger('comment_count')->default(0);
             $table->foreignId('project_id')->constrained('projects')->cascadeOnDelete();
+            $table->string('locale', 5); // 'fa', 'en'
+            $table->string('featured_image')->nullable();
+
+            // SEO
+            $table->string('meta_title')->nullable();
+            $table->text('meta_description')->nullable();
+
+            $table->unsignedInteger('comment_count')->default(0);
+            $table->unsignedInteger('views_count')->default(0);
+            $table->unsignedInteger('unique_views_count')->default(0);
+            $table->unsignedInteger('estimated_reading_time')->nullable(); // minutes
+            $table->unsignedInteger('average_reading_time')->nullable(); // seconds
 
             $table->timestamps();
             $table->softDeletes();
 
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('user_id')->references('id')->on('project_users')->onDelete('cascade');
             $table->index('status');
             $table->index('published_at');
         });
