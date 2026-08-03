@@ -37,7 +37,7 @@ class Index extends Component
                 'key' => 'search',
                 'label' => __('Search'),
                 'type' => 'text',
-                'placeholder' => __("blog::messages.Name Category").'...',
+                'placeholder' => __("blog::messages.Name Category") . '...',
             ],
             [
                 'key' => 'status',
@@ -50,7 +50,7 @@ class Index extends Component
                 ],
             ],
         ];
-        $this->link_create = route("blog.categories.create",["api_key"=>request()->route('api_key',$this->project->api_key)]);
+        $this->link_create = route("blog.categories.create", ["api_key" => request()->route('api_key', $this->project->api_key)]);
         $this->title = __('blog::messages.Categories');
         $this->headers = [
             [
@@ -79,7 +79,8 @@ class Index extends Component
                 'key' => 'Action',
                 'type' => 'actions',
                 'label' => __('Action'),
-                'href_edit' => route('blog.categories.edit', ['api_key' => $this->project->api_key,'category_id' => '__ID__']),
+                'href_edit' => ["url" => route('blog.comments.index', ['api_key' => $this->project->api_key, 'comment_id' => '__ID__']), "can" => "edit_Coment"],
+                'href_delete' => ["can" => "delete_Coment"],
             ],
         ];
 

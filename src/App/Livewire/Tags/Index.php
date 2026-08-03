@@ -76,7 +76,8 @@ class Index extends Component
                 'key' => 'Action',
                 'type' => 'actions',
                 'label' => __('Action'),
-                'href_edit' => route('blog.tags.edit', ['api_key' => $this->project->api_key,'category_id' => '__ID__']),
+                'href_edit' => ["url"=>route('blog.tags.edit', ['api_key' => $this->project->api_key,'category_id' => '__ID__']),"can"=>"edit_tag"],
+                'href_delete' => ["can"=>"delete_tag"],
             ],
         ];
 

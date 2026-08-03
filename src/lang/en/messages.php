@@ -1,17 +1,22 @@
 <?php
 return [
+    "Blogs"=>"Blogs",
     'Categories' => 'Categories',
     'Category' => 'Category',
     "Name Category"=>"Name Category",
     "Parent Category"=>"Parent Category",
     "Choose a Parent"=>"Choose a Parent",
     "Create Category"=>"Create Category",
+    "Edit Category"=>"Edit Category",
+    "Delete Category"=>"Delete Category",
     "Name Catetgory"=>"Name Catetgory",
     "Priority"=>"Priority",
 
     "Tags"=>"Tags",
     "Name Tag"=>"Name Tag",
     "Create Tag"=>"Create Tag",
+    "Edit Tag"=>"Edit Tag",
+    "Delete Tag"=>"Delete Tag",
     "Slug Tag"=>"Slug Tag",
     "This tag has already been registered in this project"=>"This tag has already been registered in this project",
     "Tag name is required."=>"Tag name is required.",
@@ -45,6 +50,9 @@ return [
     "Language"=>"Language",
     "Category not found in current language."=>"Category not found in current language.",
     "Comments"=> "Comments",
-    "No results found."=>"نتیجه‌ای یافت نشد."
+    "No results found."=>"No results found.",
+    "Create Post"=>"Create Post",
+    "Edit Post"=>"Edit Post",
+    "Delete Post"=>"Delete Post",
 
 ];

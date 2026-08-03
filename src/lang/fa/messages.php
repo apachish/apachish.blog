@@ -1,14 +1,21 @@
 <?php
 return [
+    "Blogs"=>"بلاگ ها",
     'Categories' => 'دسته بندی',
     "Name Category"=>"نام دسته بندی",
     "Parent Category"=>"دسته بندی اصلی",
     "Choose a Parent"=>"انتخاب دسته بندی اصلی",
     "Create Category"=>"ایجاد دسته بندی",
+    "Edit Category"=>"ویرایش دسته بندی",
+    "Delete Category"=>"حذف دسته بندی",
     "Name Catetgory"=>"نام دسته بندی",
     "Priority"=>"اولویت",
     "Name Tag"=>"نام برچسب",
     "Create Tag"=>"ایجاد برچسب",
+    "Edit Tag"=>"ویرایش برچسب",
+    "Delete Tag"=>"حذف برچسب",
+    "Edit Coment"=>"ویرایش نظرا",
+    "Delete Coment"=>"حذف نظرا",
     "Slug Tag"=>"آدرس یکتا",
     "Tags"=>"برچسب ها",
     "This tag has already been registered in this project"=>"این برچسب در این پروژه قبلاً ثبت شده است",
@@ -44,7 +51,9 @@ return [
     "Language"=>"زبان",
     "Category not found in current language."=>"'دسته‌بندی در زبان جاری یافت نشد.'",
     "Comments"=> "نظرات",
-    "No results found."=>"نتیجه‌ای یافت نشد."
-
+    "No results found."=>"نتیجه‌ای یافت نشد.",
+    "Create Post"=>"ایجاد پست",
+    "Edit Post"=>"ویرایش پست",
+    "Delete Post"=>"حذف پست",
 
 ];

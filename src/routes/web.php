@@ -11,7 +11,7 @@ use Apachish\Blog\App\Livewire\Comments\Index as CommentsIndex;
 use Apachish\Blog\App\Livewire\Comments\CreateOrUpdate as CreateCommentsCreateOrUpdate;
 
 
-Route::prefix('panel/{api_key}/blog')->middleware(['auth', 'verified',\App\Http\Middleware\SetProject::class])->group(function () {
+Route::prefix('panel/{api_key}/blog')->middleware([ 'auth:web,project', 'verified',\App\Http\Middleware\SetProject::class])->group(function () {
     Route::post('/editor/upload', function (\Illuminate\Http\Request $request) {
 
         $path = $request->file('image')->store('editor', 'public');
