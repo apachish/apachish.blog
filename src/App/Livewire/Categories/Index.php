@@ -3,6 +3,7 @@
 namespace Apachish\Blog\App\Livewire\Categories;
 
 use Apachish\Blog\App\Models\Category;
+use Livewire\Attributes\On;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -16,8 +17,11 @@ class Index extends Component
     public $limit = 15;
     public $headers;
     public $project;
-    protected $listeners = ['delete-row' => 'deleteRow', 'refresh-categories' => '$refresh', 'dateSelected' => 'handleDateSelection'];
-
+//    protected $listeners = ['delete-row' => 'deleteRow', 'refresh-categories' => '$refresh', 'dateSelected' => 'handleDateSelection'];
+    protected $listeners = [
+        'refresh-data' => '$refresh',
+        'dateSelected' => 'handleDateSelection',
+    ];
     public array $filters = [];
 
     public array $filterState = [
@@ -140,13 +144,21 @@ class Index extends Component
 
     }
 
-    public function deleteRow($id)
+//    public function deleteRow($id)
+//    {
+//        if ($id) {
+//            Category::findOrFail($id)->delete();
+//            $this->loadCategories();
+//            $this->dispatch("refresh-categories");
+//        }
+//    }
+
+
+    #[On('delete-row')]
+    public function deleteRow($id): void
     {
-        if ($id) {
-            Category::findOrFail($id)->delete();
-            $this->loadCategories();
-            $this->dispatch("refresh-categories");
-        }
+        Category::findOrFail($id)->delete();
+        $this->loadCategories();
     }
 
     public function handleDateSelection($name, $value)

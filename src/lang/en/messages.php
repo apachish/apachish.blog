@@ -1,6 +1,7 @@
 <?php
 return [
     "Blogs"=>"Blogs",
+    "Search"=>"Search",
     'Categories' => 'Categories',
     'Category' => 'Category',
     "Name Category"=>"Name Category",
@@ -17,6 +18,8 @@ return [
     "Create Tag"=>"Create Tag",
     "Edit Tag"=>"Edit Tag",
     "Delete Tag"=>"Delete Tag",
+    "Edit Comment"=>"Edit Comment",
+    "Delete Comment"=>"Delete Comment",
     "Slug Tag"=>"Slug Tag",
     "This tag has already been registered in this project"=>"This tag has already been registered in this project",
     "Tag name is required."=>"Tag name is required.",
@@ -54,5 +57,10 @@ return [
     "Create Post"=>"Create Post",
     "Edit Post"=>"Edit Post",
     "Delete Post"=>"Delete Post",
-
+    "All"=>"All",
+    "Active"=>"Active",
+    "Disabled"=>"Disabled",
+    "Content"=>"Content",
+    "Previous Comment"=>"Previous Comment",
+    "Comment"=>"Comment"
 ];

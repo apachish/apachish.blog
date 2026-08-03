@@ -12,6 +12,11 @@ class Comment extends Model
 
     public function replies()
     {
-        return $this->hasMany("Apachish\Blog\App\Models\Comment", "parent_id");
+        return $this->hasMany(Comment::class, "parent_id");
+    }
+
+    public function post()
+    {
+        return $this->hasMany(PostRevision::class, "parent_id");
     }
 }

@@ -1,6 +1,7 @@
 <?php
 return [
     "Blogs"=>"بلاگ ها",
+    "Search"=>"جستجو",
     'Categories' => 'دسته بندی',
     "Name Category"=>"نام دسته بندی",
     "Parent Category"=>"دسته بندی اصلی",
@@ -55,5 +56,10 @@ return [
     "Create Post"=>"ایجاد پست",
     "Edit Post"=>"ویرایش پست",
     "Delete Post"=>"حذف پست",
-
+    "All"=>"همه",
+    "Active"=>"فعال",
+    "Disabled"=>"غیر فعال",
+    "Content"=>"محتوا",
+    "Previous Comment"=>"نظر قبلی",
+    "Comment"=>"نظر"
 ];
