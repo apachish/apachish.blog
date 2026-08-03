@@ -25,10 +25,10 @@ class PermissionSeeder extends Seeder
             $permission_blogs = Permission::updateOrCreate(
                 [
                     "name" => "blogs",
+                    "guard_name" => $guard_name,
                 ],
                 [
                     "title" => "blog::messages.Blogs",
-                    "guard_name" => $guard_name,
                     "parent_id" => $permission_panel->id
                 ]);
 
@@ -37,40 +37,44 @@ class PermissionSeeder extends Seeder
             $permission_categories = Permission::updateOrCreate(
                 [
                     "name" => "categories",
+                    "guard_name" => $guard_name,
+
                 ],
                 [
                     "title" => "blog::messages.Categories",
-                    "guard_name" => $guard_name,
                     "parent_id" => $permission_blogs->id
                 ]);
 
             $permission_posts = Permission::updateOrCreate(
                 [
                     "name" => "posts",
+                    "guard_name" => $guard_name,
+
                 ],
                 [
                     "title" => "blog::messages.Posts",
-                    "guard_name" => $guard_name,
                     "parent_id" => $permission_blogs->id
                 ]);
 
             $permission_tags = Permission::updateOrCreate(
                 [
                     "name" => "tags",
+                    "guard_name" => $guard_name,
+
                 ],
                 [
                     "title" => "blog::messages.Tags",
-                    "guard_name" => $guard_name,
                     "parent_id" => $permission_blogs->id
                 ]);
 
             $permission_comments = Permission::updateOrCreate(
                 [
                     "name" => "comments",
+                    "guard_name" => $guard_name,
+
                 ],
                 [
                     "title" => "blog::messages.Comments",
-                    "guard_name" => $guard_name,
                     "parent_id" => $permission_blogs->id
                 ]);
 
@@ -143,16 +147,23 @@ class PermissionSeeder extends Seeder
                 ],
             ];
             foreach ($permissions as $set) {
-                $permission = Permission::updateOrCreate(['name' => $set['name']], [
-                    'title' => $set['title'],
+                $permission = Permission::updateOrCreate([
+                    'name' => $set['name'],
                     'guard_name' => $set['guard_name'],
+
+                ], [
+                    'title' => $set['title'],
                     'parent_id' => $set['parent_id'],
                 ]);
 
                 if (!empty($set['children'])) {
                     foreach ($set['children'] as $child) {
                         $child['parent_id'] = $permission->id;
-                        $child_permission = Permission::updateOrCreate(['name' => $child['name']], $child);
+                        $child_permission = Permission::updateOrCreate([
+                            'name' => $child['name'],
+                            'guard_name' => $child['guard_name'],
+
+                        ], $child);
                     }
                 }
             }
