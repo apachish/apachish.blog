@@ -6,6 +6,7 @@ namespace Apachish\Blog\App\Livewire\Posts;
 use Apachish\Blog\App\Models\Category;
 use Apachish\Blog\App\Models\Post;
 use Apachish\User\Models\User;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Livewire\Attributes\On;
@@ -119,7 +120,8 @@ class CreateOrUpdate extends Component
         if ( $value == "scheduled") {
             $this->published_time = now()->timezone(config('app.timezone'))->format('H:i');
             $date =  now()->timezone(config('app.timezone'));
-            $this->published_at = $this->locale == "fa"?toJalali($date,'Y/m/d'):date($date,'Y/m/d');
+
+            $this->published_at = $this->locale == "fa"?toJalali($date,'Y/m/d'):Carbon::parse($date)->format('Y/m/d');
         }
     }
 
