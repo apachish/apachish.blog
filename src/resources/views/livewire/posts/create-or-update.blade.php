@@ -79,7 +79,6 @@
                         type="text"
                         placeholder="{{__("blog::messages.Write the post title here…")}}"
                         class="w-full border-0 bg-transparent text-2xl font-bold text-gray-900 placeholder-gray-300 focus:outline-none focus:ring-0"
-                        dir="rtl"
                     />
                     @error('title')
                     <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
@@ -93,7 +92,7 @@
                             wire:model.lazy="slug"
                             type="text"
                             class="flex-1 rounded-md border-0 bg-gray-50 px-2 py-1 text-xs text-gray-600 focus:outline-none focus:ring-1 focus:ring-indigo-400"
-                            dir="ltr"
+
                         />
                         @error('slug')
                         <p class="text-xs text-red-500">{{ $message }}</p>
@@ -118,7 +117,7 @@
                         rows="3"
                         placeholder="{{__("blog::messages.A summary of the post to display in the blog list (optional)…")}}"
                         class="w-full resize-none rounded-xl border border-gray-200 px-4 py-3 text-sm text-gray-700 placeholder-gray-400 transition focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-100"
-                        dir="rtl"
+
                     ></textarea>
                                         <p class="mt-1 text-right text-xs text-gray-400">
                                             <span x-text="($wire.excerpt ?? '').length"></span>/500
@@ -155,7 +154,7 @@
                                 type="text"
                                 placeholder="{{__("blog::messages.Meta Title")}}"
                                 class="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-100"
-                                dir="rtl"
+
                                 maxlength="60"
                             />
                             {{--                            <div class="mt-1 flex justify-between">--}}
@@ -183,7 +182,7 @@
                                 rows="3"
                                 placeholder="{{__("blog::messages.Short description to display in search results…")}}"
                                 class="w-full resize-none rounded-xl border border-gray-200 px-4 py-2.5 text-sm focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-100"
-                                dir="rtl"
+
                                 maxlength="160"
                             ></textarea>
 {{--                            <div class="mt-1 flex justify-between">--}}
@@ -347,7 +346,7 @@
                     <select
                         wire:model="category"
                         class="w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm text-gray-700 focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-100"
-                        dir="rtl"
+
                     >
                         <option value="">انتخاب دسته‌بندی…</option>
                         @foreach($categories as $category)

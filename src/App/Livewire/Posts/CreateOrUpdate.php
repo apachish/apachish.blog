@@ -6,6 +6,7 @@ namespace Apachish\Blog\App\Livewire\Posts;
 use Apachish\Blog\App\Models\Category;
 use Apachish\Blog\App\Models\Post;
 use Apachish\User\Models\User;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Livewire\Attributes\On;
 use Livewire\Component;
@@ -234,5 +235,52 @@ class CreateOrUpdate extends Component
         $this->tags[] = $model;
         $this->dispatch('tag-clear');
 
+    }
+    public $image; // پراپرتی موقت آپلود
+
+    public function uploadImage()
+    {
+        $this->validate([
+            'image' => 'required|image|max:2048',
+        ]);
+
+        $path = $this->image->store('editor-images', 'public');
+        $url = route('image.display', $path);
+
+        $this->reset('image');
+
+        $this->dispatch('image-uploaded', url: $url);
+    }
+
+// این پراپرتی‌ها رو کنار $image موجودت اضافه کن:
+    public $video;
+    public $audio;
+
+    public function uploadVideo()
+    {
+        $this->validate([
+            'video' => 'required|file|mimetypes:video/mp4,video/webm,video/ogg|max:51200', // ۵۰ مگابایت
+        ]);
+
+        $path = $this->video->store('editor-videos', 'public');
+        $url = route('video.display', $path);
+
+        $this->reset('video');
+
+        $this->dispatch('video-uploaded', url: $url);
+    }
+
+    public function uploadAudio()
+    {
+        $this->validate([
+            'audio' => 'required|file|mimetypes:audio/mpeg,audio/wav,audio/ogg,audio/mp3|max:20480', // ۲۰ مگابایت
+        ]);
+
+        $path = $this->audio->store('editor-audios', 'public');
+        $url = route('audio.display', $path);
+
+        $this->reset('audio');
+
+        $this->dispatch('audio-uploaded', url: $url);
     }
 }
