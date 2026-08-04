@@ -8,8 +8,17 @@ use Illuminate\Support\Facades\Storage;
 
 class Media extends Model
 {
-    protected $fillable = ['disk', 'path', 'name', 'mime_type', 'size', 'meta'];
+    protected $table = 'blog_media';
+    protected $fillable = ['disk', 'path', 'name', 'mime_type', 'size', 'meta','project_id','used'];
     protected $casts = ['meta' => 'array'];
+
+    protected static function booted(): void
+    {
+        // هر جا رکورد Media حذف بشه (چه دستی، چه توسط جاروبرقی)، فایل فیزیکی هم پاک می‌شه
+        static::deleting(function (Media $media) {
+            Storage::disk($media->disk)->delete($media->path);
+        });
+    }
 
     public function url(): string
     {

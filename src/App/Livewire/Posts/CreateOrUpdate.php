@@ -4,6 +4,7 @@ namespace Apachish\Blog\App\Livewire\Posts;
 
 // توجه: مسیر مدل Post رو با ساختار واقعی پکیج/پروژه‌ی خودتون چک کنید
 use Apachish\Blog\App\Models\Category;
+use Apachish\Blog\App\Models\Media;
 use Apachish\Blog\App\Models\Post;
 use Apachish\User\Models\User;
 use Carbon\Carbon;
@@ -191,6 +192,7 @@ class CreateOrUpdate extends Component
                 'password'=>$user_admin->password,
             ]);
         }
+        logger("content",[$this->content]);
         $post = Post::updateOrCreate([
             "id"=>$this->post_id,
             'project_id'          => $this->project->id,
@@ -210,6 +212,7 @@ class CreateOrUpdate extends Component
         if(sizeof($this->tags))
             $post->tags()->sync(collect($this->tags)->pluck("id")->toArray());
         $this->saved = true;
+        $this->syncMediaForContent($this->content);
 
         session()->flash('success', 'پست با موفقیت ذخیره شد.');
         $this->redirect(route('blog.posts.index',["api_key"=>$this->project->api_key]));
@@ -246,9 +249,18 @@ class CreateOrUpdate extends Component
             'image' => 'required|image|max:2048',
         ]);
 
-        $path = $this->image->store('editor-images', 'public');
+        $path = $this->image->store('editor-images/'.$this->project->id, 'public');
         $url = route('image.display', $path);
-
+        Media::create([
+            'disk'       => 'public',
+            'path'       => $path,
+            'name'       => $this->image->getClientOriginalName(),
+            'mime_type'  => $this->image->getMimeType(),
+            'size'       => $this->image->getSize(),
+            'meta'       => null,
+            'project_id' => $this->project->id,
+            'used'       => false, // ← تا وقتی داخل محتوا ذخیره نشده، استفاده‌نشده حساب می‌شه
+        ]);
         $this->reset('image');
 
         $this->dispatch('image-uploaded', url: $url);
@@ -264,9 +276,18 @@ class CreateOrUpdate extends Component
             'video' => 'required|file|mimetypes:video/mp4,video/webm,video/ogg|max:51200', // ۵۰ مگابایت
         ]);
 
-        $path = $this->video->store('editor-videos', 'public');
+        $path = $this->video->store('editor-videos/'.$this->project->id, 'public');
         $url = route('video.display', $path);
-
+        Media::create([
+            'disk'       => 'public',
+            'path'       => $path,
+            'name'       => $this->video->getClientOriginalName(),
+            'mime_type'  => $this->video->getMimeType(),
+            'size'       => $this->video->getSize(),
+            'meta'       => null,
+            'project_id' => $this->project->id,
+            'used'       => false, // ← تا وقتی داخل محتوا ذخیره نشده، استفاده‌نشده حساب می‌شه
+        ]);
         $this->reset('video');
 
         $this->dispatch('video-uploaded', url: $url);
@@ -278,11 +299,46 @@ class CreateOrUpdate extends Component
             'audio' => 'required|file|mimetypes:audio/mpeg,audio/wav,audio/ogg,audio/mp3|max:20480', // ۲۰ مگابایت
         ]);
 
-        $path = $this->audio->store('editor-audios', 'public');
+        $path = $this->audio->store('editor-audios/'.$this->project->id, 'public');
         $url = route('audio.display', $path);
 
+        Media::create([
+            'disk'       => 'public',
+            'path'       => $path,
+            'name'       => $this->audio->getClientOriginalName(),
+            'mime_type'  => $this->audio->getMimeType(),
+            'size'       => $this->audio->getSize(),
+            'meta'       => null,
+            'project_id' => $this->project->id,
+            'used'       => false, // ← تا وقتی داخل محتوا ذخیره نشده، استفاده‌نشده حساب می‌شه
+        ]);
         $this->reset('audio');
 
         $this->dispatch('audio-uploaded', url: $url);
     }
+
+
+    public function syncMediaForContent(string $content): void
+    {
+        Media::query()
+            ->where('project_id', $this->project->id)
+            ->get()
+            ->each(function (Media $media) use ($content) {
+                logger("media",[$media]);
+                $isUsedNow = str_contains($content, $media->path);
+
+                if ($isUsedNow) {
+                    if (! $media->used) {
+                        $media->update(['used' => true]);
+                    }
+                    return;
+                }
+
+                // قبلاً استفاده می‌شد ولی الان از متن حذف شده → دیگه لازم نیست، پاکش کن
+                if ($media->used) {
+                    $media->delete(); // ← فایل هم به‌خاطر observer بالا خودکار پاک می‌شه
+                }
+            });
+    }
+
 }

@@ -20,6 +20,7 @@ return new class extends Migration
             $table->unsignedInteger('size')->default(0);
             $table->json('meta')->nullable(); // alt text, crops, etc.
             $table->foreignId('project_id')->constrained('projects')->cascadeOnDelete();
+            $table->boolean('used')->default(false);
 
             $table->timestamps();
         });

@@ -2,12 +2,14 @@
 
 namespace Apachish\Blog;
 
+use Apachish\Blog\App\Console\Commands\PruneOrphanMedia;
 use Apachish\Blog\App\Models\Post;
 use Apachish\Blog\App\Observers\BlogPostObserver;
 use Apachish\Blog\Livewire\Categories\Index;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use Livewire\Livewire;
+use Illuminate\Console\Scheduling\Schedule;
 
 class BlogServiceProvider extends ServiceProvider
 {
@@ -47,6 +49,18 @@ class BlogServiceProvider extends ServiceProvider
         $this->publishes([
             __DIR__.'/Database/Seeders/' => database_path('seeders'),
         ], 'blog-seeders');
+        if ($this->app->runningInConsole()) {
+            // ثبت کامند برای این‌که با `php artisan` قابل‌اجرا باشه
+            $this->commands([
+                PruneOrphanMedia::class,
+            ]);
+
+            // زمان‌بندی خودکار، بدون این‌که پروژه‌ی میزبان کاری بکنه
+            $this->app->booted(function () {
+                $schedule = $this->app->make(Schedule::class);
+                $schedule->command('blog:prune-orphan-media')->daily();
+            });
+        }
     }
 }
 
