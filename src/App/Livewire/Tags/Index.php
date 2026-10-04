@@ -105,10 +105,16 @@ class Index extends Component
 
 
         $tags = $tags->simplePaginate($this->limit);
+        $check = $this->project->user_id === auth()->id() || $this->project->projectUsers->pluck('id')->contains(auth()->id());
 
         $this->data = $tags->count()
             ? [
-                "tableRowData" => $tags->items(),
+                "tableRowData" => collect($tags->items())->map(function ($tag) use ( $check) {
+                    $tag->can_edit = $check;
+                    $tag->can_delete = $check;
+
+                    return $tag;
+                })->values()->all(),
                 'pagination' => [
                     "current_page" => $tags->currentPage(),
                     "next_page_url" => $tags->nextPageUrl(),

@@ -113,10 +113,17 @@ class Index extends Component
 
 
         $comments = $comments->simplePaginate($this->limit);
+        $check = $this->project->user_id === auth()->id() || $this->project->projectUsers->pluck('id')->contains(auth()->id());
 
         $this->data = $comments->count()
             ? [
                 "tableRowData" => $comments->items(),
+                "tableRowData" => collect($comments->items())->map(function ($comment) use ( $check) {
+                    $comment->can_edit = $check;
+                    $comment->can_delete = $check;
+
+                    return $comment;
+                })->values()->all(),
                 'pagination' => [
                     "current_page" => $comments->currentPage(),
                     "next_page_url" => $comments->nextPageUrl(),
@@ -147,7 +154,7 @@ class Index extends Component
     public function deleteRow($id)
     {
         if ($id) {
-            Category::findOrFail($id)->delete();
+            Comment::findOrFail($id)->delete();
             $this->loadCategories();
             $this->dispatch("refresh-comments");
         }

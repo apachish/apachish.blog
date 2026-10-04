@@ -113,10 +113,16 @@ class Index extends Component
 
 
         $categories = $categories->simplePaginate($this->limit);
+        $check = $this->project->user_id === auth()->id() || $this->project->projectUsers->pluck('id')->contains(auth()->id());
 
         $this->data = $categories->count()
             ? [
-                "tableRowData" => $categories->items(),
+                "tableRowData" => collect($categories->items())->map(function ($category) use ( $check) {
+                    $category->can_edit = $check;
+                    $category->can_delete = $check;
+
+                    return $category;
+                })->values()->all(),
                 'pagination' => [
                     "current_page" => $categories->currentPage(),
                     "next_page_url" => $categories->nextPageUrl(),

@@ -152,9 +152,15 @@ class Index extends Component
 
         $posts = $posts->simplePaginate($this->limit);
 
+        $check = $this->project->user_id === auth()->id() || $this->project->projectUsers->pluck('id')->contains(auth()->id());
         $this->data = $posts->count()
             ? [
-                "tableRowData" => $posts->items(),
+                "tableRowData" => collect($posts->items())->map(function ($post) use ( $check) {
+                    $post->can_edit = $check;
+                    $post->can_delete = $check;
+
+                    return $post;
+                })->values()->all(),
                 'pagination' => [
                     "current_page" => $posts->currentPage(),
                     "next_page_url" => $posts->nextPageUrl(),
