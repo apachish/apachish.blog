@@ -21,7 +21,7 @@ class CreateOrUpdate extends Component
         'project_id' => null,
         'locale' => null, // مقدار پیش‌فرض
         'parent_id' => null,
-        'order' => 0,
+        'order' => 1,
         "description" => null,
         "status" => true,
     ];
@@ -32,11 +32,13 @@ class CreateOrUpdate extends Component
     {
         $this->locale = app()->getLocale() != $this->locale && $this->locale ? $this->locale : app()->getLocale() ;
 
+        $this->category["order"] = Category::count() + 1;
         $category = Category::find($this->category_id);
         $this->category = $category ? $category->toArray() : $this->category;
-        $this->title_button = __("Create");
+        $this->title_button = __("Save");
+
         if ($category)
-            $this->title_button = __("Edit");
+            $this->title_button = __("Edit Category");
         $this->categories = Category::where("status", true)->get();
         $this->project = current_project();
         $this->category["project_id"] = $this->project->id;
@@ -46,9 +48,8 @@ class CreateOrUpdate extends Component
     public function messages()
     {
         return [
-            'category.slug.unique' => 'این آدرس در این پروژه قبلاً ثبت شده است',
-            'category.slug.required' => 'نام دسته بندی الزامی است',
-            'category.name.required' => 'نام دسته بندی الزامی است',
+            'category.slug.unique' => __("blog::messages.This name has already been registered in this project."),
+            'category.name.required' => __("blog::messages.The category name is required."),
         ];
     }
 
@@ -62,11 +63,6 @@ class CreateOrUpdate extends Component
             'category.parent_id' => [
                 'nullable',
                 'exists:blog_categories,id'
-            ],
-
-            'category.locale' => [
-                'required',
-                Rule::in(["en", "fa"])
             ],
             'category.name' => [
                 'required',

@@ -62,5 +62,7 @@ return [
     "Disabled"=>"Disabled",
     "Content"=>"Content",
     "Previous Comment"=>"Previous Comment",
-    "Comment"=>"Comment"
+    "Comment"=>"Comment",
+    "The category name is required."=>"The category name is required.",
+    "This name has already been registered in this project."=>"This name has already been registered in this project."
 ];

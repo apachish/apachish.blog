@@ -61,5 +61,7 @@ return [
     "Disabled"=>"غیر فعال",
     "Content"=>"محتوا",
     "Previous Comment"=>"نظر قبلی",
-    "Comment"=>"نظر"
+    "Comment"=>"نظر",
+    "The category name is required."=>"نام دسته بندی الزامی است",
+    "This name has already been registered in this project."=>"این نام در این پروژه قبلاً ثبت شده است"
 ];

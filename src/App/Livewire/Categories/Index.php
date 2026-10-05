@@ -16,6 +16,7 @@ class Index extends Component
     public $link_create;
     public $limit = 15;
     public $headers;
+    public $locale;
     public $project;
 //    protected $listeners = ['delete-row' => 'deleteRow', 'refresh-categories' => '$refresh', 'dateSelected' => 'handleDateSelection'];
     protected $listeners = [
@@ -32,6 +33,7 @@ class Index extends Component
     public function mount()
     {
         $this->project = current_project();
+        $this->locale = app()->getLocale() != $this->locale && $this->locale ? $this->locale : app()->getLocale() ;
 
     }
 
@@ -46,7 +48,7 @@ class Index extends Component
             ],
             [
                 'key' => 'status',
-                'label' => 'وضعیت',
+                'label' => __('Status'),
                 'type' => 'select',
                 'options' => [
                     ['value' => '', 'label' => __("All")],
@@ -98,7 +100,7 @@ class Index extends Component
 
     public function loadCategories()
     {
-        $categories = Category::with('parent');
+        $categories = Category::with('parent')->where("locale",$this->locale);
 
         $categories->when($this->filterState['search'] ?? null, function ($query, $value) {
             $query->where('name', 'like', "%{$value}%");

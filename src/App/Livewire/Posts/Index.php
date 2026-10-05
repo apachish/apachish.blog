@@ -59,7 +59,7 @@ class Index extends Component
             ],
             [
                 'key' => 'status',
-                'label' => 'وضعیت',
+                'label' => __('Status'),
                 'type' => 'select',
                 'options' => [
                     ['value' => '', 'label' => __("All")],

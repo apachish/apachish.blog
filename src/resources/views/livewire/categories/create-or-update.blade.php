@@ -1,8 +1,9 @@
 <div class="grid grid-cols-1 gap-12 xl:grid-cols-1">
-    <form class="space-y-12" wire:submit="save">
-        <x-admin.common.component-card title="{{$title}}" button_submit="{{$title_button}}">
-            <!-- Elements -->
 
+    <form class="space-y-12" wire:submit="save">
+        <x-admin.common.component-card title="{{$title}}" button_submit="{{$title_button}}" >
+            <!-- Elements -->
+            @if(env("CHANGE_LOCALE"))
             <div class="flex flex-wrap items-center gap-8">
                 <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
                     {{__("blog::messages.Language")}}
@@ -44,7 +45,7 @@
                 </p>
                 @enderror
             </div>
-
+            @endif
             <div>
                 <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
                     {{__("blog::messages.Name Catetgory")}}
@@ -64,7 +65,6 @@
                 </p>
                 @enderror
             </div>
-
             <!-- Elements -->
             <div>
                 <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
