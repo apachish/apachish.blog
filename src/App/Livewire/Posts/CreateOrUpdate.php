@@ -97,15 +97,19 @@ class CreateOrUpdate extends Component
         ];
     }
 
-    protected $messages = [
-        'title.required'   => 'عنوان پست الزامی است.',
-        'title.min'        => 'عنوان باید حداقل ۳ کاراکتر داشته باشد.',
-        'slug.required'    => 'اسلاگ الزامی است.',
-        'slug.alpha_dash'  => 'اسلاگ فقط می‌تواند حروف انگلیسی، عدد، خط‌تیره و آندرلاین داشته باشد.',
-        'slug.unique'      => 'این اسلاگ قبلاً استفاده شده است.',
-        'content.required' => 'محتوای پست الزامی است.',
-        'content.min'      => 'محتوا باید حداقل ۱۰ کاراکتر داشته باشد.',
-    ];
+    public function getMessages(): array
+    {
+        return      [
+            'title.required'   => __("blog::messages.title.required"),
+            'title.min'        => __("blog::messages.title.min"),
+            'slug.required'    => __("blog::messages.slug.required"),
+            'slug.alpha_dash'  => __("blog::messages.slug.alpha_dash"),
+            'slug.unique'      => __("blog::messages.slug.unique"),
+            'content.required' => __("blog::messages.content.required"),
+            'content.min'      => __("blog::messages.content.min"),
+            ];
+    }
+
 
     // وقتی عنوان تغییر کند، اسلاگ به‌صورت خودکار تولید شود
     // فقط تا زمانی که کاربر خودش دستی اسلاگ را عوض نکرده باشد

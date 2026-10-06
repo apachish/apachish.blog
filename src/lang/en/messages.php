@@ -64,5 +64,17 @@ return [
     "Previous Comment"=>"Previous Comment",
     "Comment"=>"Comment",
     "The category name is required."=>"The category name is required.",
-    "This name has already been registered in this project."=>"This name has already been registered in this project."
+    "This name has already been registered in this project."=>"This name has already been registered in this project.",
+    "Draft — Unsaved"=>"Draft — Unsaved",
+    "Select category…"=>"Select category…",
+    "Release status"=>"Release status",
+    'title.required'   => 'The title field is required.',
+    'title.min'        => 'The title must be at least 3 characters.',
+    'slug.required'    => 'The slug field is required.',
+    'slug.alpha_dash'  => 'The slug may only contain letters, numbers, dashes, and underscores.',
+    'slug.unique'      => 'This slug has already been taken.',
+    'content.required' => 'The content field is required.',
+    'content.min'      => 'The content must be at least 10 characters.',
+
+
 ];

@@ -5,7 +5,7 @@
             type="text"
             wire:model.live.debounce.150ms="search"
             wire:click="openClose"
-            placeholder="جستجو..."
+            placeholder="{{__("blog::messages.Search")}}..."
             class="w-full border px-3 py-2 rounded"
         >
         @if($dropdownOpen)

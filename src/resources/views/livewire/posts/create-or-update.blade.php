@@ -14,7 +14,7 @@
                 </a>
                 <div>
                     <h1 class="text-base font-semibold text-gray-900 dark:text-gray-100">{{__("blog::messages.Create a new post")}}</h1>
-                    <p class="text-xs text-gray-500 dark:text-gray-400">پیش‌نویس — ذخیره نشده</p>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">{{__("blog::messages.Draft — Unsaved")}}</p>
                 </div>
             </div>
 
@@ -237,6 +237,7 @@
                     </div>
                 </div>
 
+                @if(env("CHANGE_LOCALE"))
                 {{-- زبان --}}
                 <div class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-700 dark:bg-gray-800" x-data>
                     <h3 class="mb-4 flex items-center gap-2 text-sm font-semibold text-gray-800 dark:text-gray-200">
@@ -258,7 +259,7 @@
                         @endforeach
                     </div>
                 </div>
-
+                @endif
                 {{-- تصویر شاخص --}}
                 <div class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-700 dark:bg-gray-800">
                     <h3 class="mb-3 flex items-center gap-2 text-sm font-semibold text-gray-800 dark:text-gray-200">
@@ -294,23 +295,37 @@
                     @enderror
                 </div>
 
-                {{-- دسته‌بندی --}}
-                <div class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-700 dark:bg-gray-800">
-                    <h3 class="mb-3 flex items-center gap-2 text-sm font-semibold text-gray-800 dark:text-gray-200">
-                        <svg class="h-4 w-4 text-yellow-500 dark:text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                {{-- دسته‌‌بندی --}}
+                <div class="rounded-2xl border border-gray-200/80 bg-white p-5 shadow-xs transition-colors dark:border-gray-800 dark:bg-gray-900/80">
+                    <h3 class="mb-3.5 flex items-center gap-2 text-sm font-semibold text-gray-800 dark:text-gray-100">
+                        <svg class="h-4 w-4 text-amber-500 dark:text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
                         </svg>
-                        دسته‌بندی
+                        {{ __("blog::messages.Category") }}
                     </h3>
-                    <select
-                        wire:model="category"
-                        class="w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm text-gray-700 focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-100 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-200"
-                    >
-                        <option value="">انتخاب دسته‌بندی…</option>
-                        @foreach($categories as $category)
-                            <option value="{{$category->id}}">{{$category->name}}</option>
-                        @endforeach
-                    </select>
+
+                    <div class="relative">
+                        <select
+                            wire:model="category"
+                            class="w-full cursor-pointer appearance-none rounded-xl border border-gray-200 bg-gray-50/50 px-3.5 py-2.5 text-sm text-gray-700 transition-all focus:border-indigo-500 focus:bg-white focus:outline-none focus:ring-4 focus:ring-indigo-500/10 dark:border-gray-700/80 dark:bg-gray-800/80 dark:text-gray-200 dark:focus:border-indigo-500 dark:focus:bg-gray-800 dark:focus:ring-indigo-500/20"
+                        >
+                            <option value="" class="bg-white text-gray-500 dark:bg-gray-800 dark:text-gray-400">
+                                {{ __("blog::messages.Select category…") }}
+                            </option>
+                            @foreach($categories as $category)
+                                <option value="{{ $category->id }}" class="bg-white text-gray-800 dark:bg-gray-800 dark:text-gray-200">
+                                    {{ $category->name }}
+                                </option>
+                            @endforeach
+                        </select>
+
+                        {{-- آیکون فلش اختصاصی برای زیبایی بیشتر در هر دو حالت لایت و دارک --}}
+                        <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center px-3 text-gray-400 dark:text-gray-500">
+                            <svg class="h-4 w-4 stroke-current" fill="none" viewBox="0 0 24 24" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </div>
+                    </div>
                 </div>
 
                 {{-- برچسب‌ها --}}
@@ -319,7 +334,7 @@
                         <svg class="h-4 w-4 text-blue-500 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"/>
                         </svg>
-                        برچسب‌ها
+                        {{__("blog::messages.Tags")}}
                     </h3>
                     <livewire:blog::tags.search-tag name="tags" :locale="$locale"/>
 
