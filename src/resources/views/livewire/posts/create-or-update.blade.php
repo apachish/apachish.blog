@@ -74,32 +74,36 @@
                 @endif
 
                 {{-- عنوان --}}
-                <div class="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
-                    <input
-                        wire:model.live.debounce.400ms="title"
-                        type="text"
-                        placeholder="{{__("blog::messages.Write the post title here…")}}"
-                        class="w-full border-0 bg-transparent text-2xl font-bold text-gray-900 placeholder-gray-300 focus:outline-none focus:ring-0 dark:text-gray-100 dark:placeholder-gray-600"
-                    />
+                <div class="rounded-2xl border border-[#1d2939] bg-[#101828] p-6 shadow-lg">
+
+                    {{-- بورد ورودی عنوان --}}
+                    <div class="rounded-xl border border-slate-700/60 bg-slate-800/60 p-3 transition-all focus-within:border-indigo-500/80 focus-within:ring-2 focus-within:ring-indigo-500/20">
+                        <input
+                            wire:model.live.debounce.400ms="title"
+                            type="text"
+                            placeholder="{{__("blog::messages.Write the post title here…")}}"
+                            class="w-full border-0 bg-transparent text-2xl font-bold text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-0"
+                        />
+                    </div>
+
                     @error('title')
-                    <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                    <p class="mt-2 text-sm text-red-400">{{ $message }}</p>
                     @enderror
 
                     {{-- اسلاگ --}}
-                    <div class="mt-3 flex items-center gap-2 border-t border-gray-100 pt-3 dark:border-gray-700">
-                        <span class="text-xs text-gray-400 dark:text-gray-500">{{__("blog::messages.Slug")}}:</span>
-                        <span class="text-xs text-gray-400 dark:text-gray-500">/blog/</span>
+                    <div class="mt-4 flex items-center gap-2 border-t border-[#1d2939] pt-3">
+                        <span class="text-xs text-slate-400">{{__("blog::messages.Slug")}}:</span>
+                        <span class="text-xs text-slate-400" dir="ltr">/blog/</span>
                         <input
                             wire:model.lazy="slug"
                             type="text"
-                            class="flex-1 rounded-md border-0 bg-gray-50 px-2 py-1 text-xs text-gray-600 focus:outline-none focus:ring-1 focus:ring-indigo-400 dark:bg-gray-900 dark:text-gray-300"
+                            class="flex-1 rounded-lg border border-slate-700/50 bg-[#0d121c] px-2.5 py-1 text-xs text-slate-200 transition-colors focus:border-indigo-500/80 focus:outline-none focus:ring-1 focus:ring-indigo-500/80"
                         />
                         @error('slug')
-                        <p class="text-xs text-red-500 dark:text-red-400">{{ $message }}</p>
+                        <p class="text-xs text-red-400">{{ $message }}</p>
                         @enderror
                     </div>
                 </div>
-
                 <x-admin.form.form-elements.editor/>
 
                 {{-- خلاصه مطلب --}}
