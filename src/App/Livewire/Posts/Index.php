@@ -33,10 +33,10 @@ class Index extends Component
         "private"=>'bg-yellow-50 text-yellow-700',
         "trash"=>'bg-red-50 text-red-700',
     ];
-
     public function mount()
     {
         $this->project = current_project();
+
         $this->statusLabels = [
             "draft"=>__("Draft"),
             "pending"=>__("pending"),
@@ -136,7 +136,7 @@ class Index extends Component
 
     public function loadPosts()
     {
-        $posts = Post::with('categories');
+        $posts = Post::where("project_id",$this->project->id)->with('categories');
 
         $posts->when($this->filterState['search'] ?? null, function ($query, $value) {
             $query->where('name', 'like', "%{$value}%");

@@ -90,7 +90,7 @@ class Index extends Component
 
     public function loadTags()
     {
-        $tags = Tag::query();
+        $tags = Tag::where("project_id",$this->project->id);
 
         $tags->when($this->filterState['search'] ?? null, function ($query, $value) {
             $query->where('name', 'like', "%{$value}%");

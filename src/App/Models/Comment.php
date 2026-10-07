@@ -17,6 +17,6 @@ class Comment extends Model
 
     public function post()
     {
-        return $this->hasMany(PostRevision::class, "parent_id");
+        return $this->hasMany(PostRevision::class, "post_id");
     }
 }

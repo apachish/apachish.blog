@@ -98,7 +98,9 @@ class Index extends Component
 
     public function loadCategories()
     {
-        $comments = Comment::orderBy("updated_at", "desc");
+        $comments = Comment::whereHas("post",function ($query){
+            $query->where("project_id",$this->project->id);
+        })->orderBy("updated_at", "desc");
 
         $comments->when($this->filterState['search'] ?? null, function ($query, $value) {
             $query->where('content', 'like', "%{$value}%");

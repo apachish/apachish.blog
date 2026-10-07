@@ -100,7 +100,7 @@ class Index extends Component
 
     public function loadCategories()
     {
-        $categories = Category::with('parent')->where("locale",$this->locale);
+        $categories = Category::where("project_id",$this->project->id)->with('parent')->where("locale",$this->locale);
 
         $categories->when($this->filterState['search'] ?? null, function ($query, $value) {
             $query->where('name', 'like', "%{$value}%");
