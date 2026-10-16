@@ -16,6 +16,7 @@ class Index extends Component
     public $limit = 15;
     public $headers;
     public $project;
+    public $locale;
     protected $listeners = ['delete-row' => 'deleteRow', 'refresh-posts' => '$refresh', 'dateSelected' => 'handleDateSelection'];
 
     public array $filters = [];
@@ -45,6 +46,7 @@ class Index extends Component
             "trash"=>__("trash"),
 
         ];
+        $this->locale = app()->getLocale() != $this->locale && $this->locale ? $this->locale : app()->getLocale() ;
 
     }
 
@@ -136,7 +138,7 @@ class Index extends Component
 
     public function loadPosts()
     {
-        $posts = Post::where("project_id",$this->project->id)->with('categories');
+        $posts = Post::where("locale",$this->locale)->where("project_id",$this->project->id)->with('categories');
 
         $posts->when($this->filterState['search'] ?? null, function ($query, $value) {
             $query->where('name', 'like', "%{$value}%");
