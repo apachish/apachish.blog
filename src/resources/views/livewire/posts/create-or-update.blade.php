@@ -74,38 +74,42 @@
                 @endif
 
                 {{-- عنوان --}}
-                <div class="rounded-2xl border border-[#1d2939] bg-[#101828] p-6 shadow-lg">
+                <div class="rounded-2xl border border-slate-200 dark:border-[#1d2939] bg-white dark:bg-[#101828] p-4 sm:p-6 shadow-lg transition-colors">
 
                     {{-- بورد ورودی عنوان --}}
-                    <div class="rounded-xl border border-slate-700/60 bg-slate-800/60 p-3 transition-all focus-within:border-indigo-500/80 focus-within:ring-2 focus-within:ring-indigo-500/20">
+                    <div class="rounded-xl border border-slate-300 dark:border-slate-700/60 bg-slate-50 dark:bg-slate-800/60 p-3 transition-all focus-within:border-indigo-500/80 focus-within:ring-2 focus-within:ring-indigo-500/20">
                         <input
                             wire:model.live.debounce.400ms="title"
                             type="text"
                             placeholder="{{__("blog::messages.Write the post title here…")}}"
-                            class="w-full border-0 bg-transparent text-2xl font-bold text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-0"
+                            class="w-full border-0 bg-transparent text-xl sm:text-2xl font-bold text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-0"
                         />
                     </div>
 
                     @error('title')
-                    <p class="mt-2 text-sm text-red-400">{{ $message }}</p>
+                    <p class="mt-2 text-sm text-red-500 dark:text-red-400">{{ $message }}</p>
                     @enderror
 
-                    {{-- اسلاگ --}}
-                    <div class="mt-4 flex items-center gap-2 border-t border-[#1d2939] pt-3">
-                        <span class="text-xs text-slate-400">{{__("blog::messages.Slug")}}:</span>
-                        <span class="text-xs text-slate-400" dir="ltr">/blog/</span>
+                    {{-- اسلاگ (ریسپانسیو شده برای موبایل و دسکتاپ) --}}
+                    <div class="mt-4 flex flex-wrap items-center gap-1.5 sm:gap-2 border-t border-slate-200 dark:border-[#1d2939] pt-3">
+                        <div class="flex items-center gap-1">
+                            <span class="text-xs text-slate-500 dark:text-slate-400">{{__("blog::messages.Slug")}}:</span>
+                            <span class="text-xs text-slate-500 dark:text-slate-400" dir="ltr">/blog/</span>
+                        </div>
+
                         <input
                             wire:model.lazy="slug"
                             type="text"
-                            class="flex-1 rounded-lg border border-slate-700/50 bg-[#0d121c] px-2.5 py-1 text-xs text-slate-200 transition-colors focus:border-indigo-500/80 focus:outline-none focus:ring-1 focus:ring-indigo-500/80"
+                            class="w-full sm:flex-1 min-w-[180px] rounded-lg border border-slate-300 dark:border-slate-700/50 bg-slate-50 dark:bg-[#0d121c] px-2.5 py-1.5 sm:py-1 text-xs text-slate-800 dark:text-slate-200 transition-colors focus:border-indigo-500/80 focus:outline-none focus:ring-1 focus:ring-indigo-500/80"
                         />
+
                         @error('slug')
-                        <p class="text-xs text-red-400">{{ $message }}</p>
+                        <p class="w-full text-xs text-red-500 dark:text-red-400 mt-1">{{ $message }}</p>
                         @enderror
                     </div>
                 </div>
-                <x-admin.form.form-elements.editor/>
-
+                {{--                <x-admin.form.form-elements.editor/>--}}
+                <x-form.summernote wire:model="content" :rtl="app()->getLocale() === 'fa'" />
                 {{-- خلاصه مطلب --}}
                 <div class="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
                     <label class="mb-3 flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -300,38 +304,42 @@
                 </div>
 
                 {{-- دسته‌‌بندی --}}
-                <div class="rounded-2xl border border-gray-200/80 bg-white p-5 shadow-xs transition-colors dark:border-gray-800 dark:bg-gray-900/80">
-                    <h3 class="mb-3.5 flex items-center gap-2 text-sm font-semibold text-gray-800 dark:text-gray-100">
-                        <svg class="h-4 w-4 text-amber-500 dark:text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
-                        </svg>
-                        {{ __("blog::messages.Category") }}
-                    </h3>
+{{--                <div class="rounded-2xl border border-gray-200/80 bg-white p-5 shadow-xs transition-colors dark:border-gray-800 dark:bg-gray-900/80">--}}
+{{--                    <h3 class="mb-3.5 flex items-center gap-2 text-sm font-semibold text-gray-800 dark:text-gray-100">--}}
+{{--                        <svg class="h-4 w-4 text-amber-500 dark:text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">--}}
+{{--                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>--}}
+{{--                        </svg>--}}
+{{--                        {{ __("blog::messages.Category") }}--}}
+{{--                    </h3>--}}
 
-                    <div class="relative">
-                        <select
-                            wire:model="category"
-                            class="w-full cursor-pointer appearance-none rounded-xl border border-gray-200 bg-gray-50/50 px-3.5 py-2.5 text-sm text-gray-700 transition-all focus:border-indigo-500 focus:bg-white focus:outline-none focus:ring-4 focus:ring-indigo-500/10 dark:border-gray-700/80 dark:bg-gray-800/80 dark:text-gray-200 dark:focus:border-indigo-500 dark:focus:bg-gray-800 dark:focus:ring-indigo-500/20"
-                        >
-                            <option value="" class="bg-white text-gray-500 dark:bg-gray-800 dark:text-gray-400">
-                                {{ __("blog::messages.Select category…") }}
-                            </option>
-                            @foreach($categories as $category)
-                                <option value="{{ $category->id }}" class="bg-white text-gray-800 dark:bg-gray-800 dark:text-gray-200">
-                                    {{ $category->name }}
-                                </option>
-                            @endforeach
-                        </select>
+{{--                    <div class="relative">--}}
+{{--                        <select--}}
+{{--                            wire:model="category"--}}
+{{--                            class="w-full cursor-pointer appearance-none rounded-xl border border-gray-200 bg-gray-50/50 px-3.5 py-2.5 text-sm text-gray-700 transition-all focus:border-indigo-500 focus:bg-white focus:outline-none focus:ring-4 focus:ring-indigo-500/10 dark:border-gray-700/80 dark:bg-gray-800/80 dark:text-gray-200 dark:focus:border-indigo-500 dark:focus:bg-gray-800 dark:focus:ring-indigo-500/20"--}}
+{{--                        >--}}
+{{--                            <option value="" class="bg-white text-gray-500 dark:bg-gray-800 dark:text-gray-400">--}}
+{{--                                {{ __("blog::messages.Select category…") }}--}}
+{{--                            </option>--}}
+{{--                            @foreach($categories as $category)--}}
+{{--                                <option value="{{ $category->id }}" class="bg-white text-gray-800 dark:bg-gray-800 dark:text-gray-200">--}}
+{{--                                    {{ $category->name }}--}}
+{{--                                </option>--}}
+{{--                            @endforeach--}}
+{{--                        </select>--}}
 
-                        {{-- آیکون فلش اختصاصی برای زیبایی بیشتر در هر دو حالت لایت و دارک --}}
-                        <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center px-3 text-gray-400 dark:text-gray-500">
-                            <svg class="h-4 w-4 stroke-current" fill="none" viewBox="0 0 24 24" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
-                            </svg>
-                        </div>
-                    </div>
-                </div>
-
+{{--                        --}}{{-- آیکون فلش اختصاصی برای زیبایی بیشتر در هر دو حالت لایت و دارک --}}
+{{--                        <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center px-3 text-gray-400 dark:text-gray-500">--}}
+{{--                            <svg class="h-4 w-4 stroke-current" fill="none" viewBox="0 0 24 24" stroke-width="2">--}}
+{{--                                <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />--}}
+{{--                            </svg>--}}
+{{--                        </div>--}}
+{{--                    </div>--}}
+{{--                </div>--}}
+                <livewire:blog::categories.add-select-categories
+                    wire:model="categories"
+                    :project="$project"
+                    :locale="$locale"
+                />
                 {{-- برچسب‌ها --}}
                 <div class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-700 dark:bg-gray-800">
                     <h3 class="mb-3 flex items-center gap-2 text-sm font-semibold text-gray-800 dark:text-gray-200">
@@ -340,8 +348,10 @@
                         </svg>
                         {{__("blog::messages.Tags")}}
                     </h3>
-                    <livewire:blog::tags.search-tag name="tags" :locale="$locale"/>
+                    <div wire:ignore>
 
+                    <livewire:blog::tags.search-tag name="tags" :locale="$locale" :project="$project"/>
+                    </div>
                     @if($post && $post->tags && $post->tags->count())
                         @foreach($post->tags as $tag)
                             <span class="px-3 py-1 rounded-full text-xs bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300">
@@ -352,7 +362,7 @@
                     @if(sizeof($tags))
                         @foreach($tags as $tag)
                             <span class="px-3 py-1 rounded-full text-xs bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300">
-                                {{ $tag['name'] }}
+                                {{ data_get($tag,'name') }}
                             </span>
                         @endforeach
                     @endif

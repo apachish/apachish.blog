@@ -17,10 +17,11 @@ class BlogPostObserver
 
     protected function createRevision(Post $post): void
     {
+        logger("kose ame maryam mikhoram", ['post' => $post]);
         PostRevision::updateOrCreate([
             'post_id'          => $post->id,
-            'user_id'          => $post->user_id,
             ],[
+            'user_id'          => $post->user_id,
             'project_id'       => $post->project_id,
             'title'            => $post->title,
             'slug'            => $post->slug,

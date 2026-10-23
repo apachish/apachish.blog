@@ -75,6 +75,4 @@ return [
     'slug.unique'      => 'This slug has already been taken.',
     'content.required' => 'The content field is required.',
     'content.min'      => 'The content must be at least 10 characters.',
-
-
 ];

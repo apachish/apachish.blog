@@ -23,26 +23,24 @@ class CreateOrUpdate extends Component
         'parent_id' => null,
         'order' => 1,
         "description" => null,
-        "status" => true,
+        "status" => "1",
     ];
     public $categories = [];
 
 
     public function mount()
     {
-        $this->locale = app()->getLocale() != $this->locale && $this->locale ? $this->locale : app()->getLocale() ;
-
         $this->category["order"] = Category::count() + 1;
+        $this->project = current_project();
         $category = Category::find($this->category_id);
         $this->category = $category ? $category->toArray() : $this->category;
         $this->title_button = __("Save");
 
         if ($category)
-            $this->title_button = __("Edit Category");
-        $this->categories = Category::where("status", true)->get();
-        $this->project = current_project();
-        $this->category["project_id"] = $this->project->id;
-        $this->category["locale"] = $this->locale;
+            $this->title_button = __("blog::messages.Edit Category");
+        $this->categories = Category::where("status", true)
+            ->whereNot("id", $this->category_id)->get();
+
     }
 
     public function messages()
@@ -58,7 +56,6 @@ class CreateOrUpdate extends Component
         $this->category["slug"] = slug_seo($this->category['name']);
 
         $this->validate([
-            'category.project_id' => ['required', 'exists:projects,id'],
 
             'category.parent_id' => [
                 'nullable',
@@ -74,7 +71,7 @@ class CreateOrUpdate extends Component
                 'required',
                 'string',
                 'max:255',
-                Rule::unique('blog_categories','slug')
+                Rule::unique('blog_categories', 'slug')
                     ->where('project_id', $this->project->id)
                     ->ignore($this->category_id)
             ],
@@ -97,25 +94,25 @@ class CreateOrUpdate extends Component
         ]);
         // ۲. بررسی اینکه آیا عکس جدیدی آپلود شده است یا خیر
 
-        Category::updateOrCreate(['id' => $this->category['id'],'project_id' => $this->category['project_id']], [
-            'name' => data_get($this->category,'name'),
-            'slug' => data_get($this->category,'slug'),
-            'locale' => data_get($this->category,'locale'),
-            'parent_id' => data_get($this->category,'parent_id')?:null,
-            'order' => data_get($this->category,'order')?:1,
-            'lo' => data_get($this->category,'order')?:1,
-
-            'description' => data_get($this->category,'description'),
-            'status' => data_get($this->category,'status'),
-
-        ]);
-        return $this->redirect(route('blog.categories.index',['api_key'=>$this->project->api_key]));
+        Category::updateOrCreate([
+            'id' => $this->category['id'],
+            'project_id' => $this->project->id
+        ],
+            [
+                'name' => data_get($this->category, 'name'),
+                'slug' => data_get($this->category, 'slug'),
+                'parent_id' => data_get($this->category, 'parent_id') ?: null,
+                'order' => data_get($this->category, 'order') ?: 1,
+                'description' => data_get($this->category, 'description'),
+                'status' => data_get($this->category, 'status'),
+            ]);
+        return $this->redirect(route('blog.categories.index', ['api_key' => $this->project->api_key]));
 
     }
 
     public function render()
     {
         $this->title = __('blog::messages.Create Category');
-        return view('blog::livewire.categories.create-or-update')->layout('layouts::panel');
+        return view('blog::livewire.categories.create-or-update')->layout('layouts::app');
     }
 }

@@ -25,7 +25,6 @@ class CreateOrUpdate extends Component
     public string $excerpt = '';
     public string $status = 'draft';
     public string $locale = '';
-    public string $category = '';
     public array $tags = [];
     public  $meta_title = '';
     public  $meta_description = '';
@@ -42,7 +41,7 @@ class CreateOrUpdate extends Component
 
     // برای جلوگیری از بازنویسی اسلاگ بعد از ویرایش دستی توسط کاربر
     public bool $slugManuallyEdited = false;
-
+//
     public $project;
     public $categories = [];
     public $post = null;
@@ -80,9 +79,12 @@ class CreateOrUpdate extends Component
             'content'          => 'required|min:10',
             'excerpt'          => 'nullable|max:500',
             'status'           => 'required|in:draft,published,scheduled',
-            'category'         => ['nullable','string','max:100',function ($attribute, $value, $fail) {
+// ولیدیشن جدید برای آرایه‌ای از دسته‌بندی‌ها
+            'categories'       => 'nullable|array',
+            'categories.*'     => ['required', 'string', function ($attribute, $value, $fail) {
                 $exists = Category::where('locale', $this->locale)
-                        ->where('id', $value)->exists();
+                    ->where('id', $value)
+                    ->exists();
 
                 if (!$exists) {
                     $fail(__("blog::messages.Category not found in current language."));
@@ -173,14 +175,37 @@ class CreateOrUpdate extends Component
     }
 
     // ذخیره پست
+// ذخیره پست
     public function save(string $status = 'draft'): void
     {
+dd($this->categories);
         $this->status = $status;
         $this->validate();
 
+        // ۱. اگر عکس شاخص آپلود نشده بود، اولین عکس موجود در متن را پیدا کن
         $imagePath = ($this->featured_image instanceof \Illuminate\Http\UploadedFile)
             ? $this->featured_image->store($this->project->id.'/posts', 'public')
             : data_get($this->post, 'featured_image');
+
+        if (empty($imagePath) && !empty($this->content)) {
+            // جستجوی اولین تگ img در محتوای HTML
+            preg_match('/<img.+src=[\'"]([^\'"]+)[\'"].*>/i', $this->content, $matches);
+            if (isset($matches[1])) {
+                $extractedImage = $matches[1];
+
+                // اگر مسیر عکس شامل URL کامل یا مسیر ذخیره شده است، آن را متناسب با ساختار ذخیره‌سازی تنظیم کنید
+                // مثلاً اگر مسیر نسبی ذخیره شده باشد:
+                $imagePath = str_replace(url('storage/'), '', $extractedImage);
+                // یا اگر سیستم شما مسیر کامل ذخیره می‌کند، می‌توانید مستقیم $extractedImage را قرار دهید.
+            }
+        }
+
+        // ۲. اگر توضیحات کوتاه (excerpt) خالی بود، از متن اصلی بساز
+        if (empty($this->excerpt) && !empty($this->content)) {
+            // حذف تگ‌های HTML و محدود کردن به ۱۵۰ الی ۲۰۰ کاراکتر اول
+            $plainText = strip_tags($this->content);
+            $this->excerpt = Str::limit(trim($plainText), 160);
+        }
 
         $user_admin  = auth()->user();
         $user = User::where("email_mobile",$user_admin->email)->first();
@@ -196,11 +221,13 @@ class CreateOrUpdate extends Component
                 'password'=>$user_admin->password,
             ]);
         }
+
         logger("content",[$this->content]);
+
         $post = Post::updateOrCreate([
             "id"=>$this->post_id,
             'project_id'          => $this->project->id,
-            ],[
+        ],[
             'title'            => $this->title,
             'slug'             => $this->slug,
             'content'          => $this->content,
@@ -212,9 +239,11 @@ class CreateOrUpdate extends Component
             'user_id'          => $user->id,
             'locale'          => $this->locale,
         ]);
+
         $post->categories()->sync($this->categories);
         if(sizeof($this->tags))
             $post->tags()->sync(collect($this->tags)->pluck("id")->toArray());
+
         $this->saved = true;
         $this->syncMediaForContent($this->content);
 
@@ -233,8 +262,6 @@ class CreateOrUpdate extends Component
 
     public function render()
     {
-
-        $this->categories = Category::where("project_id",$this->project->id)->where("locale",$this->locale)->get();
         return view('blog::livewire.posts.create-or-update')->layout('layouts::panel');
     }
 
