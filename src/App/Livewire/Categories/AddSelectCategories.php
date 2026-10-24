@@ -3,6 +3,7 @@
 namespace Apachish\Blog\App\Livewire\Categories;
 
 use Apachish\Blog\App\Models\Category;
+use Illuminate\Validation\Rule;
 use Livewire\Attributes\Modelable;
 use Livewire\Attributes\On;
 use Livewire\Component;
@@ -13,6 +14,7 @@ class AddSelectCategories extends Component
     public array $categories = [];
     public $allCategories = [];
     public string $newCategoryName = '';
+    public string $newCategorySlug = '';
     public ?string $newCategoryParentId = null; // برای نگهداری آی‌دی دسته‌بندی والد
     public $project;
     public $locale;
@@ -26,12 +28,6 @@ class AddSelectCategories extends Component
 
     }
 
-    public function updatedCategories($value)
-    {
-        $this->categories[] = $value;
-        dd($this->categories);
-
-    }
 
     public function loadCategories()
     {
@@ -43,16 +39,38 @@ class AddSelectCategories extends Component
             ->get();
     }
 
+    public function messages()
+    {
+        return [
+            'newCategorySlug.unique' => __("blog::messages.This name has already been registered in this project."),
+            'newCategoryName.required' => __("blog::messages.The category name is required."),
+        ];
+    }
+
 // متد افزودن دسته جدید به همراه انتخاب دسته والد
     public function addNewCategory()
     {
+        $this->newCategorySlug = slug_seo($this->newCategoryName);
+
         $this->validate([
             'newCategoryName' => 'required|string|max:100',
-            'newCategoryParentId' => 'nullable|exists:blog_categories,id',
+            'newCategoryParentId' => [
+                'nullable',
+                'exists:blog_categories,id'
+            ],
+            'newCategorySlug' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('blog_categories', 'slug')
+                    ->where('project_id', $this->project->id)
+            ],
         ]);
         $category = Category::create([
             'project_id' => $this->project->id,
             'locale'     => $this->locale,
+            'status'    => true,
+            'order'     => Category::count()+1,
             'name'       => $this->newCategoryName,
             'slug'       => slug_seo($this->newCategoryName),
             'parent_id'  => $this->newCategoryParentId ?: null,

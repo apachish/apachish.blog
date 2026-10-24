@@ -8,12 +8,14 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Sitemap\Contracts\Sitemapable;
 use Spatie\Sitemap\Tags\Url;
 
 class PostRevision extends Model implements Sitemapable
 {
     use HasReadingTime;
+    use SoftDeletes;
 
     protected $readingTimeColumn = 'content'; // اختیاری، اگر نام فیلد فرق دارد
 

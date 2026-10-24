@@ -174,82 +174,53 @@ class CreateOrUpdate extends Component
         $this->content = $html;
     }
 
-    // ذخیره پست
-// ذخیره پست
+
     public function save(string $status = 'draft'): void
     {
-dd($this->categories);
         $this->status = $status;
         $this->validate();
 
-        // ۱. اگر عکس شاخص آپلود نشده بود، اولین عکس موجود در متن را پیدا کن
-        $imagePath = ($this->featured_image instanceof \Illuminate\Http\UploadedFile)
-            ? $this->featured_image->store($this->project->id.'/posts', 'public')
-            : data_get($this->post, 'featured_image');
+        // ۱. تعیین یا استخراج تصویر شاخص
+        $imagePath = $this->getOrCreateFeaturedImage();
 
-        if (empty($imagePath) && !empty($this->content)) {
-            // جستجوی اولین تگ img در محتوای HTML
-            preg_match('/<img.+src=[\'"]([^\'"]+)[\'"].*>/i', $this->content, $matches);
-            if (isset($matches[1])) {
-                $extractedImage = $matches[1];
-
-                // اگر مسیر عکس شامل URL کامل یا مسیر ذخیره شده است، آن را متناسب با ساختار ذخیره‌سازی تنظیم کنید
-                // مثلاً اگر مسیر نسبی ذخیره شده باشد:
-                $imagePath = str_replace(url('storage/'), '', $extractedImage);
-                // یا اگر سیستم شما مسیر کامل ذخیره می‌کند، می‌توانید مستقیم $extractedImage را قرار دهید.
-            }
-        }
-
-        // ۲. اگر توضیحات کوتاه (excerpt) خالی بود، از متن اصلی بساز
+        // ۲. تولید خودکار چکیده (Excerpt) در صورت خالی بودن
         if (empty($this->excerpt) && !empty($this->content)) {
-            // حذف تگ‌های HTML و محدود کردن به ۱۵۰ الی ۲۰۰ کاراکتر اول
-            $plainText = strip_tags($this->content);
-            $this->excerpt = Str::limit(trim($plainText), 160);
+            $this->excerpt = Str::limit(trim(strip_tags($this->content)), 160);
         }
 
-        $user_admin  = auth()->user();
-        $user = User::where("email_mobile",$user_admin->email)->first();
+        // ۳. پیدا کردن یا ساخت کاربر مرتبط
+        $user = $this->resolveAuthorUser();
 
-        if(!$user)
-        {
-            $user_admin  = $user_admin->replicate();
-            $user = User::create([
-                'project_id'=>$this->project->id,
-                'name'=> $user_admin->name,
-                'family'=>null,
-                'email_mobile'=>$user_admin->email,
-                'password'=>$user_admin->password,
-            ]);
-        }
-
-        logger("content",[$this->content]);
-
+        // ۴. ذخیره یا آپدیت پست
         $post = Post::updateOrCreate([
-            "id"=>$this->post_id,
+            "id"                  => $this->post_id,
             'project_id'          => $this->project->id,
         ],[
-            'title'            => $this->title,
-            'slug'             => $this->slug,
-            'content'          => $this->content,
-            'excerpt'          => $this->excerpt,
-            'status'           => $this->status,
-            'meta_title'       => $this->meta_title ?: $this->title,
-            'meta_description' => $this->meta_description ?: $this->excerpt,
-            'featured_image'   => $imagePath,
-            'user_id'          => $user->id,
-            'locale'          => $this->locale,
+            'title'               => $this->title,
+            'slug'                => $this->slug,
+            'content'             => $this->content,
+            'excerpt'             => $this->excerpt,
+            'status'              => $this->status,
+            'meta_title'          => $this->meta_title ?: $this->title,
+            'meta_description'    => $this->meta_description ?: $this->excerpt,
+            'featured_image'      => $imagePath,
+            'user_id'             => $user->id,
+            'locale'              => $this->locale,
         ]);
 
+        // ۵. سینک کردن دسته‌بندی‌ها و برچسب‌ها
         $post->categories()->sync($this->categories);
-        if(sizeof($this->tags))
+        if (!empty($this->tags)) {
             $post->tags()->sync(collect($this->tags)->pluck("id")->toArray());
+        }
 
         $this->saved = true;
         $this->syncMediaForContent($this->content);
 
         session()->flash('success', 'پست با موفقیت ذخیره شد.');
-        $this->redirect(route('blog.posts.index',["api_key"=>$this->project->api_key]));
+        $this->redirect(route('blog.posts.index', ["api_key" => $this->project->api_key]));
     }
+
 
     public function clearEditor(): void
     {
@@ -370,6 +341,77 @@ dd($this->categories);
                     $media->delete(); // ← فایل هم به‌خاطر observer بالا خودکار پاک می‌شه
                 }
             });
+    }
+
+
+    protected function getOrCreateFeaturedImage(): ?string
+    {
+        // اگر کاربر خودش تصویر شاخص آپلود کرده باشد
+        if ($this->featured_image instanceof \Illuminate\Http\UploadedFile) {
+            return $this->featured_image->store($this->project->id.'/posts', 'public');
+        }
+
+        // اگر از قبل تصویر شاخص داشته است
+        $imagePath = data_get($this->post, 'featured_image');
+        if (!empty($imagePath)) {
+            return $imagePath;
+        }
+
+        // در غیر این صورت، استخراج اولین عکس از متن
+        if (!empty($this->content)) {
+            preg_match_all('/<img[^>]+src=[\'"]([^\'"]+)[\'"]/isU', $this->content, $matches);
+
+            if (!empty($matches[1])) {
+                foreach ($matches[1] as $src) {
+                    if (Str::contains($src, ['tapsell.xyz', 'mediaad', 'tapsell', 'data:image', '.gif', 'logo'])) {
+                        continue;
+                    }
+
+                    // اگر لینک خارجی باشد، دانلود و ذخیره کن
+                    if (Str::startsWith($src, ['http://', 'https://']) && !Str::contains($src, request()->getHost())) {
+                        try {
+                            $context = stream_context_create([
+                                'http' => ['header' => "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64)\r\n"]
+                            ]);
+                            $imageContents = @file_get_contents($src, false, $context);
+
+                            if ($imageContents !== false) {
+                                $extension = pathinfo(parse_url($src, PHP_URL_PATH), PATHINFO_EXTENSION) ?: 'jpg';
+                                $extension = explode('?', $extension)[0];
+                                $filename = $this->project->id . '/posts/' . Str::uuid() . '.' . $extension;
+
+                                Storage::disk('public')->put($filename, $imageContents);
+                                return $filename;
+                            }
+                        } catch (\Exception $e) {
+                            return $src;
+                        }
+                    }
+                    return $src;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    protected function resolveAuthorUser()
+    {
+        $adminUser = auth()->user();
+        $user = User::where("email_mobile", $adminUser->email)->first();
+
+        if (!$user) {
+            $replicated = $adminUser->replicate();
+            $user = User::create([
+                'project_id'   => $this->project->id,
+                'name'         => $replicated->name,
+                'family'       => null,
+                'email_mobile' => $replicated->email,
+                'password'     => $replicated->password,
+            ]);
+        }
+
+        return $user;
     }
 
 }

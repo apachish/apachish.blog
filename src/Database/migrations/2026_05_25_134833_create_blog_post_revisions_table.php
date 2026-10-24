@@ -30,7 +30,7 @@ return new class extends Migration
             $table->timestamp('published_at')->nullable(); // زمان پابلیش این نسخه
             $table->json('meta')->nullable(); // هر داده اضافی دیگه
             $table->timestamps();
-
+            $table->softDeletes();
             $table->index(['post_id', 'created_at']);
         });
     }

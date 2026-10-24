@@ -69,7 +69,15 @@
                     @endforeach
                 </select>
             </div>
-
+            @error('newCategorySlug')
+            <p class="mt-2 text-sm text-red-500 dark:text-red-400">{{ $message }}</p>
+            @enderror
+            @error('newCategoryName')
+            <p class="mt-2 text-sm text-red-500 dark:text-red-400">{{ $message }}</p>
+            @enderror
+            @error('newCategoryParentId')
+            <p class="mt-2 text-sm text-red-500 dark:text-red-400">{{ $message }}</p>
+            @enderror
             <button
                 type="button"
                 wire:click="addNewCategory"
