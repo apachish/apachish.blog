@@ -326,7 +326,6 @@ class CreateOrUpdate extends Component
             ->where('project_id', $this->project->id)
             ->get()
             ->each(function (Media $media) use ($content) {
-                logger("media",[$media]);
                 $isUsedNow = str_contains($content, $media->path);
 
                 if ($isUsedNow) {
